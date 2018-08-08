@@ -3,7 +3,8 @@ import numpy as np
 import dutil
 
 #User constants
-device = "gpu"
+#device = "gpu"
+device = "cpu"
 model_fname = 'Model.h5'
 background_color = (210, 210, 210)
 input_w = 144
@@ -42,6 +43,7 @@ print("Loading Keras...")
 import os
 os.environ['THEANORC'] = "./" + device + ".theanorc"
 os.environ['KERAS_BACKEND'] = "theano"
+print("Importing Theano...")
 import theano
 print("Theano Version: {}".format(theano.__version__))
 from keras.models import Sequential, load_model

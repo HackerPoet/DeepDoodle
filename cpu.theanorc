@@ -1,3 +1,6 @@
 [global]
 floatX=float32
 device=cpu
+
+[gcc]
+cxxflags=-march=native
