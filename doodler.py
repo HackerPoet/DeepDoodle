@@ -1,11 +1,10 @@
 import pygame
-import random
 import numpy as np
-import cv2
-from dutil import *
+import dutil
 
 #User constants
-device = "gpu"
+#device = "gpu"
+device = "cpu"
 model_fname = 'Model.h5'
 background_color = (210, 210, 210)
 input_w = 144
@@ -40,18 +39,19 @@ rgb_array = np.zeros((input_h, input_w, 3), dtype=np.uint8)
 image_result = np.zeros((input_h, input_w, 3), dtype=np.uint8)
 
 #Keras
-print "Loading Keras..."
+print("Loading Keras...")
 import os
 os.environ['THEANORC'] = "./" + device + ".theanorc"
 os.environ['KERAS_BACKEND'] = "theano"
+print("Importing Theano...")
 import theano
-print "Theano Version: " + theano.__version__
+print("Theano Version: {}".format(theano.__version__))
 from keras.models import Sequential, load_model
 from keras import backend as K
 K.set_image_data_format('channels_first')
 
 #Load the model
-print "Loading Model..."
+print("Loading Model...")
 model = load_model(model_fname)
 
 #Open a window
@@ -80,7 +80,7 @@ def update_mouse_line(mouse_pos):
 	if prev_mouse_pos is None:
 		prev_mouse_pos = mouse_pos
 	if cur_color_ix == 1:
-		for i in xrange(mouse_interps):
+		for i in range(mouse_interps):
 			a = float(i) / mouse_interps
 			ix = int((1.0 - a)*mouse_pos[0] + a*prev_mouse_pos[0])
 			iy = int((1.0 - a)*mouse_pos[1] + a*prev_mouse_pos[1])
@@ -128,7 +128,7 @@ while running:
 	#Check if we need an update
 	if needs_update:
 		fdrawing = np.expand_dims(cur_drawing.astype(np.float32) / 255.0, axis=0)
-		pred = model.predict(add_pos(fdrawing), batch_size=1)[0]
+		pred = model.predict(dutil.add_pos(fdrawing), batch_size=1)[0]
 		cur_gen = (pred * 255.0).astype(np.uint8)
 		rgb_array = sparse_to_rgb(cur_drawing)
 		needs_update = False
