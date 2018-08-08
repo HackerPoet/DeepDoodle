@@ -1,4 +1,5 @@
-import os, random, sys
+import os
+import sys
 import numpy as np
 import cv2
 import dutil
@@ -10,6 +11,7 @@ IMAGE_W = 144
 IMAGE_H = 192
 IMAGE_DIR = 'YB_PICTURES'
 NUM_SAMPLES = NUM_IMAGES * 2 * SAMPLES_PER_IMG
+NUM_CHANNELS=3
 
 def center_resize(img):
 	assert(IMAGE_W == IMAGE_H)
@@ -30,14 +32,14 @@ def rand_dots(img, sample_ix):
 	sample_ratio = float(sample_ix) / SAMPLES_PER_IMG
 	return dutil.auto_canny(img, sample_ratio)
 
-x_data = np.empty((NUM_SAMPLES, NUM_CHANNELS, IMAGE_H, IMAGE_W), dtype=np.uint8)
-y_data = np.empty((NUM_SAMPLES, 3, IMAGE_H, IMAGE_W), dtype=np.uint8)
+x_data = np.empty((NUM_SAMPLES, NUM_CHANNELS, IMAGE_H, IMAGE_W), dtype=np.uint8) # CHANNELS was undefined
+y_data = np.empty((NUM_SAMPLES, NUM_CHANNELS, IMAGE_H, IMAGE_W), dtype=np.uint8) # CHANNELS was 3
 ix = 0
 for root, subdirs, files in os.walk(IMAGE_DIR):
 	for file in files:
 		path = os.path.join(root, file)
 		extensions = ['.jpg', '.png', '.jpeg']
-		if not any(path.endswith(ext) for ext in extensions)
+		if not any(path.endswith(ext) for ext in extensions):
 			continue
 		img = cv2.imread(path)
 		if img is None:
@@ -48,7 +50,7 @@ for root, subdirs, files in os.walk(IMAGE_DIR):
 			assert(False)
 		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 		img = yb_resize(img)
-		for i in xrange(SAMPLES_PER_IMG):
+		for i in range(SAMPLES_PER_IMG):
 			y_data[ix] = np.transpose(img, (2, 0, 1))
 			x_data[ix] = rand_dots(img, i)
 			if ix < SAMPLES_PER_IMG*16:
